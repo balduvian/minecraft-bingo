@@ -33,6 +33,9 @@ tasks {
     jar {
         enabled = false
     }
+    shadowJar {
+        archiveFileName = "bingo-plugin.jar"
+    }
     runServer {
         serverJar(File("run/paper-1.20.6-147.jar"))
         minecraftVersion("1.20.6")

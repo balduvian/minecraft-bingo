@@ -12,7 +12,6 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.inventory.*
-import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerRespawnEvent
 import org.bukkit.util.Vector
 import kotlin.math.PI
@@ -20,10 +19,6 @@ import kotlin.random.Random
 
 class EventHandler : Listener {
 	@EventHandler
-	fun onPlayerJoin(event: PlayerJoinEvent) {
-		event.player.sendMessage("welcome")
-	}
-
 	fun onCollectItem(player: Player, material: Material) {
 		val game = Game.ongoingGame ?: return
 		val playerData = PlayerData.get(player.uniqueId)
@@ -70,7 +65,7 @@ class EventHandler : Listener {
 		val game = Game.ongoingGame ?: return
 		if (!game.playersUIDs.contains(event.player.uniqueId)) return
 
-		val world = event.respawnLocation.world
+		val world = WorldManager.gameWorld ?: return
 
 		val spawnBlock = getSpawnBlock(world, event.player, game)
 
@@ -80,7 +75,7 @@ class EventHandler : Listener {
 		event.respawnLocation = newLocation
 	}
 
-	fun getSpawnBlock(world: World, player: Player, game: Game): Block {
+	private fun getSpawnBlock(world: World, player: Player, game: Game): Block {
 		val playerLocations = Bukkit.getOnlinePlayers().filter {
 			it.uniqueId != player.uniqueId &&
 				game.playersUIDs.contains(it.uniqueId) &&
@@ -102,7 +97,7 @@ class EventHandler : Listener {
 		return referenceLocation.add(directionVector).block
 	}
 
-	fun getTopYLevel(block: Block): Int {
+	private fun getTopYLevel(block: Block): Int {
 		val world = block.world
 		for (y in 319 downTo 0) {
 			if (!world.getBlockAt(block.x, y, block.z).isPassable) {

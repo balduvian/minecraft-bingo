@@ -1,6 +1,7 @@
 package com.balduvian.minecraftbingo.bingo
 
 import com.balduvian.minecraftbingo.BingoPlugin
+import com.balduvian.minecraftbingo.WorldManager
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
@@ -35,7 +36,7 @@ class Game(var playersUIDs: ArrayList<UUID>, var time: Int, var placements: Arra
 		private var gameTickTask: Int? = null
 
 		fun startGame(players: ArrayList<Player>): Boolean {
-			val world = Bukkit.getWorld("world") ?: return false
+			val world = WorldManager.createGameWorld()
 
 			ongoingGame = Game(players.map { it.uniqueId } as ArrayList<UUID>, 0, ArrayList())
 

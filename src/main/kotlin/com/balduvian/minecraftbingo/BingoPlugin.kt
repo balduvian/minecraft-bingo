@@ -10,7 +10,6 @@ class BingoPlugin : JavaPlugin() {
 	override fun onEnable() {
 		instance = this
 
-		Bukkit.getLogger().info("hello world")
 		Bukkit.getPluginManager().registerEvents(EventHandler(), this)
 		lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
 			val commands = event.registrar()
@@ -25,6 +24,7 @@ class BingoPlugin : JavaPlugin() {
 			commands.register("clear-board", "test clear your board", ClearBoardCommand())
 			commands.register("tvc", "test item vector", TestVectorCommand())
 		}
+		Bukkit.getScheduler().scheduleSyncDelayedTask(this, { WorldManager.load() }, 0)
 		GlobalTick.start()
 	}
 
