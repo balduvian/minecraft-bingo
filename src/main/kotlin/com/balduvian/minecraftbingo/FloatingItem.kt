@@ -64,6 +64,11 @@ object FloatingItem {
 				val display = items[i]?.let { if (it.isValid) it else null } ?: createDisplay(player)
 				items[i] = display
 
+				if (display.vehicle !== player || display.world !== player.world) {
+					display.leaveVehicle()
+					player.addPassenger(display)
+				}
+
 				val transform = display.transformation
 				transform.translation.set(
 					Vector3f(gridX * 0.0625f - 0.4f, gridY * 0.0625f - 0.3125f, -0.25f)

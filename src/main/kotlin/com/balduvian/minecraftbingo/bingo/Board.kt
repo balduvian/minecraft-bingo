@@ -6,6 +6,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
@@ -36,11 +37,11 @@ class Board(val grid: Array<Material>, val obtained: BooleanArray) {
 		return Board(grid.clone(), obtained.clone())
 	}
 
-	fun createInventory(player: Player): Inventory {
+	fun createInventory(boardPlayer: OfflinePlayer): Inventory {
 		val inventory = Bukkit.createInventory(
 			BingoHolder(),
 			5 * 9,
-			Component.text("${player.name}'s", NamedTextColor.GOLD)
+			Component.text("${boardPlayer.name}'s", NamedTextColor.GOLD)
 				.append(Component.text(" Bingo Board", NamedTextColor.GRAY))
 		)
 

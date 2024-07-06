@@ -34,7 +34,8 @@ class GenerateBoardsCommand : BasicCommand {
 }
 
 class OpenBoardCommand : BasicCommand {
-	override fun suggest(commandSourceStack: CommandSourceStack, args: Array<String>) = CommandUtil.suggestPlayers(args)
+	override fun suggest(commandSourceStack: CommandSourceStack, args: Array<String>) =
+		if (args.isEmpty() || args.size == 1) CommandUtil.suggestPlayers(args) else emptyList()
 
 	override fun execute(commandSourceStack: CommandSourceStack, args: Array<String>) {
 		val sender = CommandUtil.getSenderPlayer(commandSourceStack) ?: return
@@ -43,12 +44,12 @@ class OpenBoardCommand : BasicCommand {
 			Bukkit.getOfflinePlayerIfCached(name) ?: return sender.sendMessage("no player found")
 		} ?: sender
 
-		val board = PlayerData.get(sender.uniqueId).board ?: run {
+		val board = PlayerData.get(boardPlayer.uniqueId).board ?: run {
 			sender.sendMessage("${if (boardPlayer.uniqueId == sender.uniqueId) "you don't" else "${sender.name} doesn't" } have a board")
 			return
 		}
 
-		val inventory = board.createInventory(sender)
+		val inventory = board.createInventory(boardPlayer)
 		sender.openInventory(inventory)
 	}
 }

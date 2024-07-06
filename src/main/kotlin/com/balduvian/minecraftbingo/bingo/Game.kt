@@ -61,7 +61,7 @@ class Game(var playersUIDs: ArrayList<UUID>, var time: Int, var placements: Arra
 		}
 
 		const val STARTING_Y_LEVEL = 256.0
-		const val PLAYER_RADIUS = 2000.0
+		const val PLAYER_RADIUS = 4000.0
 		val ELYTRA_KEY = NamespacedKey(BingoPlugin.instance, "elytra")
 
 		fun distributePlayers(world: World, players: ArrayList<Player>) {
@@ -114,7 +114,7 @@ class Game(var playersUIDs: ArrayList<UUID>, var time: Int, var placements: Arra
 
 			if (!game.isFinished()) ++game.time
 
-			if (game.time == 600) {
+			if (game.time > 0 && game.time % 600 == 0) {
 				game.clearElytras()
 			}
 		}
