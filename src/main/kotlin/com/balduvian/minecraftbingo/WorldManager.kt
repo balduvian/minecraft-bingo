@@ -3,6 +3,7 @@ package com.balduvian.minecraftbingo
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.WorldCreator
+import org.bukkit.generator.BiomeProvider
 import java.io.File
 
 object WorldManager {

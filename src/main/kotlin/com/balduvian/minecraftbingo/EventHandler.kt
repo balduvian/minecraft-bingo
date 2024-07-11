@@ -12,13 +12,16 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.inventory.*
+import org.bukkit.event.player.PlayerBucketEmptyEvent
+import org.bukkit.event.player.PlayerBucketEntityEvent
+import org.bukkit.event.player.PlayerBucketEvent
+import org.bukkit.event.player.PlayerBucketFillEvent
 import org.bukkit.event.player.PlayerRespawnEvent
 import org.bukkit.util.Vector
 import kotlin.math.PI
 import kotlin.random.Random
 
 class EventHandler : Listener {
-	@EventHandler
 	fun onCollectItem(player: Player, material: Material) {
 		val game = Game.ongoingGame ?: return
 		val playerData = PlayerData.get(player.uniqueId)
@@ -32,6 +35,23 @@ class EventHandler : Listener {
 	@EventHandler
 	fun onPickUpItem(event: EntityPickupItemEvent) {
 		onCollectItem(event.entity as? Player ?: return, event.item.itemStack.type)
+	}
+
+	@EventHandler
+	fun onBucketEmptyEvent(event: PlayerBucketEmptyEvent) {
+		val bucket = event.itemStack ?: return
+		onCollectItem(event.player, bucket.type)
+	}
+
+	@EventHandler
+	fun onBucketEntityEvent(event: PlayerBucketEntityEvent) {
+		onCollectItem(event.player, event.entityBucket.type)
+	}
+
+	@EventHandler
+	fun onBucketFillEvent(event: PlayerBucketFillEvent) {
+		val bucket = event.itemStack ?: return
+		onCollectItem(event.player, bucket.type)
 	}
 
 	@EventHandler

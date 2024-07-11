@@ -1,6 +1,7 @@
 package com.balduvian.minecraftbingo.bingo
 
 import com.balduvian.minecraftbingo.BingoPlugin
+import com.balduvian.minecraftbingo.FloatingItem
 import com.balduvian.minecraftbingo.WorldManager
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -41,6 +42,13 @@ class Game(var playersUIDs: ArrayList<UUID>, var time: Int, var placements: Arra
 			ongoingGame = Game(players.map { it.uniqueId } as ArrayList<UUID>, 0, ArrayList())
 
 			distributePlayers(world, players)
+
+			//discover recipes for bingo items
+			for (player in players) {
+				for (item in PlayerData[player.uniqueId].board?.grid ?: continue) {
+					player.discoverRecipe(item.key)
+				}
+			}
 
 			gameTickTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(BingoPlugin.instance, ::gameTick, 0L, 1L)
 			return gameTickTask != -1
@@ -106,6 +114,7 @@ class Game(var playersUIDs: ArrayList<UUID>, var time: Int, var placements: Arra
 				Bukkit.getScheduler().scheduleSyncDelayedTask(BingoPlugin.instance, { player.isGliding = true }, 20)
 
 				passengers.forEach { player.addPassenger(it) }
+				FloatingItem.hideBoard(PlayerData.get(player.uniqueId))
 			}
 		}
 
@@ -141,9 +150,13 @@ class Game(var playersUIDs: ArrayList<UUID>, var time: Int, var placements: Arra
 
 		val player = Bukkit.getOfflinePlayer(uuid)
 
+		var seconds = time / 20
+		val minutes = seconds / 60
+		seconds -= minutes * 60
+
 		Bukkit.getOnlinePlayers().forEach { it.sendMessage(
 			Component.text(player.name ?: "[Unknown]", NamedTextColor.GOLD, TextDecoration.BOLD)
-				.append(Component.text(" finished! place: "))
+				.append(Component.text(" finished in $minutes:$seconds! place: "))
 				.append(Component.text(placements.size, NamedTextColor.GOLD, TextDecoration.BOLD))
 		) }
 	}

@@ -1,5 +1,6 @@
 package com.balduvian.minecraftbingo
 
+import com.balduvian.minecraftbingo.bingo.Board
 import com.balduvian.minecraftbingo.bingo.PlayerData
 import org.bukkit.Color
 import org.bukkit.GameMode
@@ -40,54 +41,63 @@ object FloatingItem {
 
 	fun floatingItemsTick(player: Player?, playerData: PlayerData) {
 		val board = playerData.board
-		val items = playerData.floatingItems
 
 		if (player != null && isSamePosition(player.location, playerData.lastLocation)) {
 			++playerData.stillTicks
 		} else {
 			playerData.stillTicks = 0
 		}
-
-		if (board == null || player == null || player.gameMode === GameMode.SPECTATOR) {
-			for (i in items.indices) {
-				val item = items[i]
-				if (item != null && item.isValid) {
-					item.remove()
-					items[i] = null
-				}
-			}
+		if (board == null || player == null || player.gameMode === GameMode.SPECTATOR ||
+			playerData.settings.visibility === BoardVisibility.HIDDEN || (playerData.settings.visibility == BoardVisibility.SLOT && player.inventory.heldItemSlot != playerData.settings.hotbarSlot)) {
+			hideBoard(playerData)
 		} else {
-			for (i in board.grid.indices) {
-				val gridY = 4 - (i / 5)
-				val gridX = i % 5
+			showBoard(player, playerData, board)
+		}
+	}
 
-				val display = items[i]?.let { if (it.isValid) it else null } ?: createDisplay(player)
-				items[i] = display
+	fun hideBoard(playerData: PlayerData) {
+		val items = playerData.floatingItems
+		for (i in items.indices) {
+			val item = items[i]
+			if (item != null && item.isValid) {
+				item.remove()
+				items[i] = null
+			}
+		}
+	}
 
-				if (display.vehicle !== player || display.world !== player.world) {
-					display.leaveVehicle()
-					player.addPassenger(display)
-				}
+	fun showBoard(player: Player, playerData: PlayerData, board: Board) {
+		val items = playerData.floatingItems
+		for (i in board.grid.indices) {
+			val gridY = 4 - (i / 5)
+			val gridX = i % 5
 
-				val transform = display.transformation
-				transform.translation.set(
-					Vector3f(gridX * 0.0625f - 0.4f, gridY * 0.0625f - 0.3125f, -0.25f)
-				)
-				transform.scale.set(0.125f, 0.125f, 0.125f);
-				display.transformation = transform
+			val display = items[i]?.let { if (it.isValid) it else null } ?: createDisplay(player)
+			items[i] = display
 
-				val itemStack = display.itemStack?.let { if (it.type == board.grid[i]) it else null } ?: ItemStack(board.grid[i])
-				if (board.obtained[i]) {
-					itemStack.editMeta { it.setEnchantmentGlintOverride(true) }
-					display.glowColorOverride = Color.ORANGE
-				} else {
-					itemStack.editMeta { it.setEnchantmentGlintOverride(false) }
-					display.glowColorOverride = Color.BLUE
-				}
-				display.itemStack = itemStack
+			if (display.vehicle !== player || display.world !== player.world) {
+				display.leaveVehicle()
+				player.addPassenger(display)
 			}
 
-			playerData.lastLocation = player.location
+			val transform = display.transformation
+			transform.translation.set(
+				Vector3f(gridX * 0.0625f - 0.4f, gridY * 0.0625f - 0.3125f, -0.25f)
+			)
+			transform.scale.set(0.125f, 0.125f, 0.125f);
+			display.transformation = transform
+
+			val itemStack = display.itemStack?.let { if (it.type == board.grid[i]) it else null } ?: ItemStack(board.grid[i])
+			if (board.obtained[i]) {
+				itemStack.editMeta { it.setEnchantmentGlintOverride(true) }
+				display.glowColorOverride = Color.ORANGE
+			} else {
+				itemStack.editMeta { it.setEnchantmentGlintOverride(false) }
+				display.glowColorOverride = Color.BLUE
+			}
+			display.itemStack = itemStack
 		}
+
+		playerData.lastLocation = player.location
 	}
 }
