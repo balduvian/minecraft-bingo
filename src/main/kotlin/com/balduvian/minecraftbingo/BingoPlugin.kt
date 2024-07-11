@@ -23,6 +23,7 @@ class BingoPlugin : JavaPlugin() {
 			commands.register("test-board", "test generate a new board", NewRandomBoardCommand())
 			commands.register("clear-board", "test clear your board", ClearBoardCommand())
 			commands.register("tvc", "test item vector", TestVectorCommand())
+			commands.register("board-visibility", "set when your display should be shown, specify hidden or always", BoardVisibilityCommand())
 		}
 		Bukkit.getScheduler().scheduleSyncDelayedTask(this, { WorldManager.load() }, 0)
 		GlobalTick.start()
