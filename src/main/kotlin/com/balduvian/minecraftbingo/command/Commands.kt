@@ -1,9 +1,11 @@
 package com.balduvian.minecraftbingo.command
 
+import com.balduvian.minecraftbingo.BoardVisibility
 import com.balduvian.minecraftbingo.WorldManager
 import com.balduvian.minecraftbingo.bingo.Board
 import com.balduvian.minecraftbingo.bingo.Game
 import com.balduvian.minecraftbingo.bingo.PlayerData
+import com.mojang.brigadier.suggestion.Suggestions
 import io.papermc.paper.command.brigadier.BasicCommand
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import org.bukkit.Bukkit
@@ -177,6 +179,40 @@ class TestVectorCommand : BasicCommand {
 				}
 				entity.item = stack
 			}
+		}
+	}
+}
+
+class BoardVisibilityCommand : BasicCommand {
+
+	override fun suggest(commandSourceStack: CommandSourceStack, args: Array<out String>?): MutableCollection<String> {
+		return if (args.isNullOrEmpty()) {
+			BoardVisibility.entries.map { it.name }.toMutableList()
+		} else if (args.size == 1 && args[0].lowercase().trim() == "slot") {
+			(0 until 9).map { it.toString() }.toMutableList()
+		} else arrayListOf()
+	}
+
+	override fun execute(commandSourceStack: CommandSourceStack, args: Array<out String>?) {
+		val player = CommandUtil.getSenderPlayer(commandSourceStack) ?: return
+		if (args.isNullOrEmpty()) {
+			player.sendMessage("please specify either hidden or always")
+			return
+		}
+		val newVisibility = BoardVisibility.entries.find { it.name.lowercase().trim() == args[0].lowercase().trim() }
+		if (newVisibility == null) {
+			player.sendMessage("please specify either hidden or always")
+			return
+		}
+		val playerData = PlayerData[player.uniqueId]
+		playerData.settings.visibility = newVisibility
+		if (args.size >= 2) {
+			val slot = args[1].toIntOrNull()
+			if (slot == null) {
+				player.sendMessage("invalid slot specified, current slot is ${playerData.settings.hotbarSlot}")
+				return
+			}
+			playerData.settings.hotbarSlot = slot
 		}
 	}
 }
