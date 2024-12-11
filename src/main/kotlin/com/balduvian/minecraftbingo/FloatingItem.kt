@@ -84,10 +84,10 @@ object FloatingItem {
 			transform.translation.set(
 				Vector3f(gridX * 0.0625f - 0.4f, gridY * 0.0625f - 0.3125f, -0.25f)
 			)
-			transform.scale.set(0.125f, 0.125f, 0.125f);
+			transform.scale.set(0.125f, 0.125f, 0.125f)
 			display.transformation = transform
 
-			val itemStack = display.itemStack?.let { if (it.type == board.grid[i]) it else null } ?: ItemStack(board.grid[i])
+			val itemStack = display.itemStack.let { if (it.type == board.grid[i]) it else null } ?: ItemStack(board.grid[i])
 			if (board.obtained[i]) {
 				itemStack.editMeta { it.setEnchantmentGlintOverride(true) }
 				display.glowColorOverride = Color.ORANGE
@@ -95,7 +95,7 @@ object FloatingItem {
 				itemStack.editMeta { it.setEnchantmentGlintOverride(false) }
 				display.glowColorOverride = Color.BLUE
 			}
-			display.itemStack = itemStack
+			display.setItemStack(itemStack)
 		}
 
 		playerData.lastLocation = player.location

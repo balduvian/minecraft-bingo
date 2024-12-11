@@ -19,7 +19,7 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test"))
-    compileOnly("io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21.3-R0.1-SNAPSHOT")
 }
 
 java {
@@ -37,8 +37,8 @@ tasks {
         archiveFileName = "bingo-plugin.jar"
     }
     runServer {
-        serverJar(File("run/paper-1.20.6-147.jar"))
-        minecraftVersion("1.20.6")
+        serverJar(File("run/paper-1.21.3-81.jar"))
+        minecraftVersion("1.21.3")
     }
 }
 
